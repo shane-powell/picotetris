@@ -10,14 +10,15 @@
 #include "pico/multicore.h"
 #include "hardware/gpio.h"
 
-#include "pico_explorer.hpp"
+//#include "pico_explorer.hpp"
+#include "pico_display.hpp"
 #include "picotetris.hpp"
-#include "song.cpp"
+//#include "song.cpp"
 
 using namespace pimoroni;
 
-uint16_t buffer[PicoExplorer::WIDTH * PicoExplorer::HEIGHT];
-PicoExplorer pico_explorer(buffer);
+uint16_t buffer[PicoDisplay::WIDTH * PicoDisplay::HEIGHT];
+PicoDisplay picoDisplay(buffer);
 
 //-------------------------------------------------------------------------
 // game constants
@@ -40,8 +41,8 @@ const int ny = 12; // height of tetris court (in blocks)
 // game variables (initialized during reset)
 //-------------------------------------------------------------------------
 
-const int dx = (PicoExplorer::WIDTH - 24) / nx; // pixel size of a single tetris block
-const int dy = PicoExplorer::HEIGHT / ny;
+const int dx = (PicoDisplay::WIDTH - 24) / nx; // pixel size of a single tetris block
+const int dy = PicoDisplay::HEIGHT / ny;
 int blocks[nx][ny];  // 2 dimensional array (nx*ny) representing tetris court - either empty block or occupied by a 'piece'
 bool playing = true; // true|false - game is in progress
 bool lost = false;
@@ -156,27 +157,27 @@ void core1_entry(void);
 
 void setup()
 {
-  pico_explorer.init();
-  pico_explorer.set_audio_pin(0);
-  pico_explorer.set_pen(255, 255, 255);
+  picoDisplay.init();
+  //pico_explorer.set_audio_pin(0);
+  picoDisplay.set_pen(255, 255, 255);
 
   multicore_launch_core1(core1_entry);
 
-  pico_explorer.clear();
-  pico_explorer.update();
+  picoDisplay.clear();
+  picoDisplay.update();
 
   reset();
 }
 
 void loop()
 {
-  if(pico_explorer.is_pressed(pico_explorer.A)) {
+  if(picoDisplay.is_pressed(picoDisplay.A)) {
     onLeftButton();
   }
-  if(pico_explorer.is_pressed(pico_explorer.B)) {
+  if(picoDisplay.is_pressed(picoDisplay.B)) {
     onRightButton();
   }
-  if(pico_explorer.is_pressed(pico_explorer.X)) {
+  if(picoDisplay.is_pressed(picoDisplay.X)) {
     onRotateButton();
   }
 
@@ -378,12 +379,12 @@ void draw()
 
   removeLines();
 
-  pico_explorer.update();
+  picoDisplay.update();
 }
 
 void drawCourt()
 {
-  pico_explorer.clear();
+  picoDisplay.clear();
   if (playing)
     drawPiece(current.type, current.x + 6, current.y, current.dir);
 
@@ -399,7 +400,7 @@ void drawCourt()
 
   if (lost)
   {
-    pico_explorer.text(" Game Over ", point(0, 20), 100);
+    picoDisplay.text(" Game Over ", point(0, 20), 100);
     printf("Game Over\n");
   }
 }
@@ -412,7 +413,7 @@ void drawNext()
 
 void drawScore()
 {
-  pico_explorer.text(std::to_string(score), point(0, 0), 100);
+  picoDisplay.text(std::to_string(score), point(0, 0), 100);
 }
 
 void drawPiece(unsigned int type[], int x, int y, int dir)
@@ -429,11 +430,11 @@ void drawPiece(unsigned int type[], int x, int y, int dir)
 void drawBlock(int x, int y)
 {
   rect block(x * dx, y * dy, dx, dy);
-  pico_explorer.rectangle(block);
+  picoDisplay.rectangle(block);
 }
 
 void core1_entry() {
   while(true) {
-    play_song(pico_explorer);
+    //play_song(pico_explorer);
   }
 }
