@@ -158,6 +158,7 @@ void core1_entry(void);
 void setup()
 {
   picoDisplay.init();
+  picoDisplay.set_backlight(100);
   //pico_explorer.set_audio_pin(0);
   picoDisplay.set_pen(255, 255, 255);
 
@@ -384,7 +385,10 @@ void draw()
 
 void drawCourt()
 {
+  picoDisplay.set_pen(0,0,0);
   picoDisplay.clear();
+  picoDisplay.set_pen(255,255,255);
+
   if (playing)
     drawPiece(current.type, current.x + 6, current.y, current.dir);
 
